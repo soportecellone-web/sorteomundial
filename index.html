@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SorteoTV Pro</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#1D9E75;--brand-dark:#085041;--brand-light:#E1F5EE;
+  --gold:#EF9F27;--gold-light:#FAEEDA;--gold-dark:#633806;
+  --red:#E24B4A;--red-light:#FCEBEB;--red-dark:#791F1F;
+  --blue:#378ADD;--blue-light:#E6F1FB;--blue-dark:#0C447C;
+  --bg:#f8f9fa;--surface:#ffffff;--surface2:#f1f3f5;--surface3:#e9ecef;
+  --border:#e0e0e0;--border2:#c8c8c8;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --radius:8px;--radius-lg:12px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#141414;--surface:#1e1e1e;--surface2:#252525;--surface3:#2e2e2e;
+    --border:#333;--border2:#444;--text:#f0f0f0;--text2:#aaa;--text3:#666;
+  }
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.app{max-width:960px;margin:0 auto;padding:1rem}
+
+.topbar{display:flex;align-items:center;gap:12px;padding:1rem 1.25rem;background:var(--brand);border-radius:var(--radius-lg);margin-bottom:1rem}
+.topbar-logo{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.topbar-logo i{font-size:22px;color:#fff}
+.topbar-info{flex:1}
+.topbar-info h1{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;line-height:1.2}
+.topbar-info p{font-size:12px;color:rgba(255,255,255,.75);margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.topbar-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.local-badge{background:rgba(255,255,255,.35);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;cursor:pointer;border:1.5px solid rgba(255,255,255,.5)}
+
+.nav{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:var(--radius-lg);border:1px solid var(--border);margin-bottom:1rem;overflow-x:auto}
+.ntab{flex:1;min-width:80px;padding:8px 6px;border:none;background:transparent;border-radius:var(--radius);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text2);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.ntab i{font-size:15px}
+.ntab:hover{background:var(--surface);color:var(--text)}
+.ntab.on{background:var(--surface);color:var(--brand)}
+.ntab .nb{background:var(--brand);color:#fff;font-size:10px;padding:1px 5px;border-radius:10px;min-width:16px;text-align:center}
+
+.panel{display:none}.panel.on{display:block}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.125rem;margin-bottom:.875rem}
+.ctitle{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem;display:flex;align-items:center;gap:7px}
+.ctitle i{font-size:15px;color:var(--brand)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.full{grid-column:1/-1}
+
+label{font-size:12px;font-weight:500;color:var(--text2);display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;transition:border-color .15s;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(29,158,117,.12)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+textarea{resize:vertical;min-height:90px;line-height:1.5}
+.pfx-wrap{position:relative}
+.pfx{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text2);font-weight:500;pointer-events:none}
+.pfx-wrap input{padding-left:22px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border:none;border-radius:var(--radius);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;width:100%}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{background:var(--brand-dark)}
+.btn-gold{background:var(--gold);color:var(--gold-dark)}
+.btn-gold:hover{background:#c8880e}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface3)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:var(--red-dark)}
+.btn-sm{padding:7px 13px;font-size:12px;width:auto}
+
+.stat{background:var(--surface2);border-radius:var(--radius);padding:12px 14px;text-align:center}
+.stat .v{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text)}
+.stat .l{font-size:11px;color:var(--text3);margin-top:2px}
+.stat .sub{font-size:10px;color:var(--brand);margin-top:1px;font-weight:500}
+
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.bg{background:var(--brand-light);color:#085041}
+.br{background:var(--red-light);color:var(--red-dark)}
+.bo{background:var(--gold-light);color:var(--gold-dark)}
+.bb{background:var(--blue-light);color:var(--blue-dark)}
+.bgr{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+
+.scan-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:1.75rem;text-align:center;background:var(--surface2);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.scan-zone:hover{border-color:var(--brand);background:var(--brand-light)}
+.scan-zone i{font-size:36px;color:var(--brand);display:block;margin-bottom:.625rem}
+.scan-zone p{font-size:14px;color:var(--text2);font-weight:500}
+.scan-zone small{font-size:11px;color:var(--text3);display:block;margin-top:4px}
+.scan-loading{display:none;position:absolute;inset:0;background:var(--brand-light);align-items:center;justify-content:center;flex-direction:column;gap:10px}
+.scan-loading.show{display:flex}
+.spinner{width:30px;height:30px;border:3px solid rgba(29,158,117,.2);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-log{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;font-size:12px;color:var(--text2);margin-top:8px;display:none;line-height:1.7}
+.ai-log.show{display:block}
+.ai-log strong{color:var(--brand)}
+
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.av{width:30px;height:30px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#085041;flex-shrink:0}
+.td-nm{display:flex;align-items:center;gap:8px}
+
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:4px}
+.prog-fill{height:100%;background:var(--brand);border-radius:3px;transition:width .4s}
+
+.sorteo-stage{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;text-align:center;margin-bottom:1rem}
+.drum{width:110px;height:110px;border-radius:50%;background:var(--brand);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1rem;cursor:pointer;transition:transform .15s;border:4px solid var(--brand-dark)}
+.drum:hover{transform:scale(1.06)}
+.drum.spin{animation:drm .35s ease-in-out 4}
+@keyframes drm{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}
+.drum i{font-size:34px;color:#fff}
+.drum small{font-size:10px;color:rgba(255,255,255,.8);margin-top:3px}
+
+.winner{background:var(--gold-light);border:2px solid var(--gold);border-radius:var(--radius-lg);padding:1.5rem;display:none;text-align:center;margin-bottom:1rem}
+.winner.show{display:block;animation:pop .3s ease}
+@keyframes pop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+.winner .wn{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--gold-dark);margin:.5rem 0 .25rem}
+.winner .wd{font-size:13px;color:#854F0B}
+
+.email-prev{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-top:.875rem}
+.email-hdr{padding:.875rem 1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.email-body{padding:1rem;font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto}
+
+.hist-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.hist-item:last-child{border-bottom:none}
+
+.notif{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:12px 16px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:9px;transform:translateY(100px);opacity:0;transition:all .28s;z-index:9999;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.notif.show{transform:translateY(0);opacity:1}
+.notif.ok i{color:#1D9E75}
+.notif.err i{color:var(--red)}
+
+.tabs-mini{display:flex;gap:4px;margin-bottom:.875rem;flex-wrap:wrap}
+.mtab{padding:6px 13px;border:1px solid var(--border2);background:var(--surface2);border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s}
+.mtab.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+.search-row{display:flex;gap:8px;margin-bottom:.875rem;align-items:center;flex-wrap:wrap}
+.search-row input{flex:1;min-width:160px}
+
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text3)}
+.empty i{font-size:36px;display:block;margin-bottom:.75rem;opacity:.35}
+.empty p{font-size:14px}
+
+.file-input{display:none}
+
+/* Modal de selección de local */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:10000;padding:1rem}
+.modal-box{background:var(--surface);border-radius:var(--radius-lg);padding:2rem;width:100%;max-width:440px;border:1px solid var(--border)}
+.modal-box h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:.5rem}
+.modal-box p{font-size:13px;color:var(--text2);margin-bottom:1.5rem;line-height:1.6}
+.local-options{display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem}
+.local-opt{padding:14px 16px;border:1.5px solid var(--border2);border-radius:var(--radius-lg);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;background:var(--surface2)}
+.local-opt:hover{border-color:var(--brand);background:var(--brand-light)}
+.local-opt.selected{border-color:var(--brand);background:var(--brand-light)}
+.local-opt i{font-size:22px;color:var(--brand)}
+.local-opt .lo-name{font-weight:500;font-size:14px}
+.local-opt .lo-sub{font-size:12px;color:var(--text3);margin-top:1px}
+
+@media(max-width:600px){
+  .grid2,.grid3,.grid4{grid-template-columns:1fr}
+  .ntab span{display:none}
+  .topbar-right .topbar-badge{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- MODAL SELECCIÓN DE LOCAL -->
+<div class="modal-overlay" id="modalLocal">
+  <div class="modal-box">
+    <h2>¿En qué local estás?</h2>
+    <p>Cada local tiene su propia base de datos. Tus clientes y sorteos quedan separados por sucursal.</p>
+    <div class="local-options" id="localOpts"></div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem">
+      <input type="text" id="nuevoLocalInput" placeholder="Nombre del nuevo local..." style="flex:1">
+      <button class="btn btn-ghost btn-sm" onclick="agregarLocal()" style="width:auto;flex-shrink:0"><i class="ti ti-plus"></i> Agregar</button>
+    </div>
+    <button class="btn btn-primary" onclick="confirmarLocal()"><i class="ti ti-door-enter"></i> Entrar al local</button>
+  </div>
+</div>
+
+<div class="app" id="mainApp" style="display:none">
+
+<div class="topbar">
+  <div class="topbar-logo"><i class="ti ti-device-tv"></i></div>
+  <div class="topbar-info">
+    <h1>SorteoTV Pro</h1>
+    <p>Sistema profesional · IA + Base de datos + Email + Sorteo mensual</p>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge" id="tb-aptos">0 aptos</div>
+    <div class="topbar-badge" id="tb-mes">—</div>
+    <div class="local-badge" onclick="cambiarLocal()" id="tb-local" title="Cambiar local">📍 —</div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="ntab on" onclick="goTab('reg')"><i class="ti ti-user-scan"></i><span>Registrar</span></button>
+  <button class="ntab" onclick="goTab('db')"><i class="ti ti-database"></i><span>Clientes</span><span class="nb" id="nb-db">0</span></button>
+  <button class="ntab" onclick="goTab('stats')"><i class="ti ti-chart-bar"></i><span>Estadísticas</span></button>
+  <button class="ntab" onclick="goTab('email')"><i class="ti ti-mail"></i><span>Email</span></button>
+  <button class="ntab" onclick="goTab('sorteo')"><i class="ti ti-trophy"></i><span>Sorteo</span></button>
+  <button class="ntab" onclick="goTab('config')"><i class="ti ti-settings"></i><span>Config.</span></button>
+</div>
+
+<!-- REGISTRO -->
+<div id="panel-reg" class="panel on">
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-scan"></i> Escanear DNI con IA</div>
+    <div class="scan-zone" id="scanZone" onclick="document.getElementById('dniInput').click()">
+      <i class="ti ti-id"></i>
+      <p>Tocá para cargar foto del DNI</p>
+      <small>La IA extrae nombre, apellido, número y fecha automáticamente · JPG / PNG</small>
+      <div class="scan-loading" id="scanLoader">
+        <div class="spinner"></div>
+        <span style="font-size:12px;color:var(--brand);font-weight:500" id="scanStatus">Analizando con IA...</span>
+      </div>
+    </div>
+    <input type="file" id="dniInput" class="file-input" accept="image/*" onchange="escanearDNI(this)">
+    <div class="ai-log" id="aiLog"></div>
+  </div>
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-forms"></i> Datos del cliente</div>
+    <div class="grid2">
+      <div><label>Nombre *</label><input id="f-nom" type="text" placeholder="Juan"></div>
+      <div><label>Apellido *</label><input id="f-ape" type="text" placeholder="Pérez"></div>
+      <div><label>DNI *</label><input id="f-dni" type="text" placeholder="28.456.123" maxlength="11"></div>
+      <div><label>Fecha de nacimiento</label><input id="f-nac" type="date"></div>
+      <div><label>Teléfono / WhatsApp *</label><input id="f-tel" type="tel" placeholder="+54 9 291 123-4567"></div>
+      <div><label>Email *</label><input id="f-mail" type="email" placeholder="juan@mail.com"></div>
+      <div class="full">
+        <label>Monto de compra ($) *</label>
+        <div class="pfx-wrap"><span class="pfx">$</span><input id="f-monto" type="number" placeholder="0" min="0" step="100" oninput="actualizarBarra()"></div>
+        <div id="monto-bar-wrap" style="display:none;margin-top:6px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:3px">
+            <span id="monto-label">—</span><span id="monto-threshold">Mínimo: $35.000</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" id="monto-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:.875rem">
+      <button class="btn btn-ghost" style="flex:.35" onclick="limpiarForm()"><i class="ti ti-eraser"></i> Limpiar</button>
+      <button class="btn btn-primary" style="flex:1" onclick="registrar()"><i class="ti ti-circle-check"></i> Registrar cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTES -->
+<div id="panel-db" class="panel">
+  <div class="grid4" style="margin-bottom:.875rem">
+    <div class="stat"><div class="v" id="s-total">0</div><div class="l">Total clientes</div></div>
+    <div class="stat"><div class="v" id="s-aptos">0</div><div class="l">Aptos este mes</div><div class="sub" id="s-aptos-sub">+$35.000</div></div>
+    <div class="stat"><div class="v" id="s-mes">0</div><div class="l">Registros del mes</div></div>
+    <div class="stat"><div class="v" id="s-prom">$0</div><div class="l">Ticket promedio</div></div>
+  </div>
+  <div class="card">
+    <div class="search-row">
+      <input id="srch" type="text" placeholder="Buscar por nombre, DNI o email..." oninput="filtrar()">
+      <select id="fil-mes" onchange="filtrar()" style="width:auto;min-width:150px">
+        <option value="">Todos los meses</option>
+      </select>
+      <select id="fil-apt" onchange="filtrar()" style="width:auto">
+        <option value="">Todos</option>
+        <option value="1">Solo aptos</option>
+        <option value="0">No aptos</option>
+      </select>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th><th>DNI</th><th>Email</th><th>Teléfono</th><th>Compra</th><th>Estado</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body">
+          <tr><td colspan="7"><div class="empty"><i class="ti ti-users"></i><p>Sin clientes aún</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:.875rem;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="ti ti-file-spreadsheet"></i> Exportar CSV</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportXLSX()"><i class="ti ti-file-type-xls"></i> Exportar Excel</button>
+      <button class="btn btn-ghost btn-sm" onclick="window.print()"><i class="ti ti-printer"></i> Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<!-- ESTADÍSTICAS -->
+<div id="panel-stats" class="panel">
+  <div class="grid2" style="margin-bottom:.875rem">
+    <div class="stat"><div class="v" id="st-ventas">$0</div><div class="l">Ventas totales acumuladas</div></div>
+    <div class="stat"><div class="v" id="st-conv">0%</div><div class="l">Tasa de conversión sorteo</div></div>
+  </div>
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-chart-bar"></i> Registros por mes</div>
+    <div style="position:relative;width:100%;height:220px"><canvas id="ch-meses"></canvas></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="ctitle"><i class="ti ti-chart-donut"></i> Aptos vs no aptos</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;font-size:12px;color:var(--text2)" id="leg-donut"></div>
+      <div style="position:relative;width:100%;height:180px"><canvas id="ch-donut"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ctitle"><i class="ti ti-trending-up"></i> Top compras del mes</div>
+      <div id="top-compras" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL -->
+<div id="panel-email" class="panel">
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-mail-forward"></i> Campaña de email</div>
+    <div class="tabs-mini">
+      <div class="mtab on" onclick="setEmailTab('promo',this)">Promoción mensual</div>
+      <div class="mtab" onclick="setEmailTab('recordatorio',this)">Recordatorio sorteo</div>
+      <div class="mtab" onclick="setEmailTab('ganador',this)">Notif. ganador</div>
+      <div class="mtab" onclick="setEmailTab('custom',this)">Personalizado</div>
+    </div>
+    <div class="grid2">
+      <div class="full"><label>Asunto</label><input id="e-subject" type="text" oninput="actualizarPrevEmail()"></div>
+      <div class="full"><label>Cuerpo del email</label><textarea id="e-body" rows="6" oninput="actualizarPrevEmail()"></textarea></div>
+      <div>
+        <label>Enviar a</label>
+        <select id="e-dest" onchange="actualizarPrevEmail()">
+          <option value="aptos">Aptos este mes (+$35.000)</option>
+          <option value="todos">Todos los clientes</option>
+          <option value="noaptos">No aptos (para incentivar)</option>
+        </select>
+      </div>
+      <div><label>Firma</label><input id="e-firma" type="text" placeholder="Tu nombre o negocio" oninput="actualizarPrevEmail()"></div>
+    </div>
+    <div class="email-prev">
+      <div class="email-hdr">
+        <span style="font-size:12px;color:var(--text2)"><strong style="color:var(--text)">Vista previa</strong> · <span id="e-dest-label">aptos este mes</span></span>
+        <span id="e-count-label" style="font-size:12px;color:var(--brand);font-weight:500">0 destinatarios</span>
+      </div>
+      <div class="email-body" id="e-prev-body">—</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:.875rem">
+      <button class="btn btn-ghost" style="flex:.4" onclick="generarEmailIA()"><i class="ti ti-sparkles"></i> Generar con IA</button>
+      <button class="btn btn-primary" style="flex:1" onclick="enviarEmails()"><i class="ti ti-send"></i> Enviar emails</button>
+    </div>
+    <div id="email-progress" style="display:none;margin-top:.875rem">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:5px" id="email-prog-label">Enviando...</div>
+      <div class="prog-bar"><div class="prog-fill" id="email-prog-fill" style="width:0%"></div></div>
+    </div>
+    <div id="email-log" style="display:none;margin-top:.875rem">
+      <div class="ctitle" style="margin-bottom:.5rem"><i class="ti ti-history"></i> Último envío</div>
+      <div id="email-log-body" style="font-size:12px;color:var(--text2);line-height:1.9;max-height:160px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SORTEO -->
+<div id="panel-sorteo" class="panel">
+  <div class="grid3" style="margin-bottom:.875rem">
+    <div class="stat"><div class="v" id="so-aptos">0</div><div class="l">Participantes este mes</div></div>
+    <div class="stat"><div class="v" id="so-sorteos">0</div><div class="l">Sorteos realizados</div></div>
+    <div class="stat"><div class="v" id="so-min">$35.000</div><div class="l">Monto mínimo</div></div>
+  </div>
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-trophy"></i> Sorteo mensual</div>
+    <div class="sorteo-stage">
+      <div class="drum" id="drumBtn" onclick="hacerSorteo()">
+        <i class="ti ti-player-play"></i>
+        <small>Sortear</small>
+      </div>
+      <p style="font-size:13px;color:var(--text3)" id="so-info">Cargá clientes para activar el sorteo</p>
+    </div>
+    <div class="winner" id="winCard">
+      <div style="font-size:24px">🏆</div>
+      <div class="wn" id="win-name">—</div>
+      <div class="wd" id="win-data">—</div>
+      <div style="margin-top:1rem;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="notificarGanador()"><i class="ti ti-mail"></i> Notificar por email</button>
+        <button class="btn btn-ghost btn-sm" onclick="copiarGanador()"><i class="ti ti-copy"></i> Copiar datos</button>
+      </div>
+    </div>
+    <div id="hist-wrap" style="margin-top:.875rem">
+      <div class="ctitle" style="margin-bottom:.625rem"><i class="ti ti-history"></i> Historial de sorteos</div>
+      <div id="hist-body"><div class="empty" style="padding:1rem"><p>Sin historial</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIGURACIÓN -->
+<div id="panel-config" class="panel">
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-building-store"></i> Datos del negocio</div>
+    <div class="grid2">
+      <div><label>Nombre del negocio</label><input id="c-negocio" type="text" placeholder="Mi Negocio S.A."></div>
+      <div><label>Dueño / responsable</label><input id="c-duenio" type="text" placeholder="Juan García"></div>
+      <div><label>Teléfono de contacto</label><input id="c-tel" type="tel" placeholder="+54 9 291 ..."></div>
+      <div><label>Email remitente</label><input id="c-email" type="email" placeholder="contacto@negocio.com"></div>
+      <div class="full"><label>Dirección</label><input id="c-dir" type="text" placeholder="Av. Colón 123, Bahía Blanca"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-ticket"></i> Reglas del sorteo</div>
+    <div class="grid2">
+      <div>
+        <label>Monto mínimo para participar ($)</label>
+        <div class="pfx-wrap"><span class="pfx">$</span><input id="c-minimo" type="number" value="35000" step="1000"></div>
+      </div>
+      <div><label>Premio mensual</label><input id="c-premio" type="text" value="Smart TV 50 pulgadas" placeholder="Smart TV 50 pulgadas"></div>
+      <div>
+        <label>Día del sorteo</label>
+        <select id="c-dia">
+          <option value="ultimo">Último día del mes</option>
+          <option value="15">Día 15</option>
+          <option value="1">Día 1 del mes siguiente</option>
+        </select>
+      </div>
+      <div>
+        <label>Tema de color</label>
+        <select id="c-color" onchange="cambiarColor(this.value)">
+          <option value="verde">Verde</option>
+          <option value="azul">Azul</option>
+          <option value="rojo">Rojo</option>
+          <option value="violeta">Violeta</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-robot"></i> IA para escaneo de DNI</div>
+    <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:.875rem">
+      Ingresá tu API Key de Anthropic para activar el escaneo real de DNI con inteligencia artificial.
+      Obtenela gratis en <a href="https://console.anthropic.com" target="_blank" style="color:var(--brand)">console.anthropic.com</a>.
+    </p>
+    <div class="full" style="margin-bottom:.875rem">
+      <label>API Key de Anthropic</label>
+      <input id="c-apikey" type="password" placeholder="sk-ant-api03-...">
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="testIA()" style="margin-right:8px"><i class="ti ti-circuit-ground"></i> Probar API Key</button>
+  </div>
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-map-pin"></i> Locales / sucursales</div>
+    <div id="locales-list" style="margin-bottom:.875rem"></div>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="nuevo-local-config" placeholder="Agregar nuevo local..." style="flex:1">
+      <button class="btn btn-ghost btn-sm" onclick="agregarLocalConfig()"><i class="ti ti-plus"></i> Agregar</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ctitle"><i class="ti ti-database-export"></i> Datos</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="ti ti-download"></i> Exportar CSV</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportXLSX()"><i class="ti ti-file-type-xls"></i> Exportar Excel</button>
+      <button class="btn btn-red btn-sm" onclick="limpiarDB()"><i class="ti ti-trash"></i> Limpiar base de datos</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:0">
+    <button class="btn btn-primary" onclick="guardarConfig()"><i class="ti ti-device-floppy"></i> Guardar configuración</button>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<div class="notif" id="notif">
+  <i class="ti ti-circle-check"></i>
+  <span id="notif-msg">OK</span>
+</div>
+
+<script>
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const getMes = () => MESES[new Date().getMonth()]+' '+new Date().getFullYear();
+
+// ===================== MULTI-LOCAL =====================
+const LOCALES_KEY = 'sorteoTV_locales';
+const CONFIG_KEY = 'sorteoTV_config_global';
+let localActual = null;
+
+function getLocales() {
+  try { return JSON.parse(localStorage.getItem(LOCALES_KEY)) || ['Local 1']; }
+  catch(e) { return ['Local 1']; }
+}
+function setLocales(arr) { localStorage.setItem(LOCALES_KEY, JSON.stringify(arr)); }
+function getDBKey(local) { return 'sorteoTV_db_' + local.replace(/\s+/g,'_'); }
+
+function cargarDBLocal(local) {
+  try {
+    const raw = localStorage.getItem(getDBKey(local));
+    return raw ? JSON.parse(raw) : { clientes: [], sorteos: [], config: { minimo:35000, premio:'Smart TV 50 pulgadas' } };
+  } catch(e) {
+    return { clientes: [], sorteos: [], config: { minimo:35000, premio:'Smart TV 50 pulgadas' } };
+  }
+}
+function guardarDBLocal(local, db) {
+  localStorage.setItem(getDBKey(local), JSON.stringify(db));
+}
+
+let DB = { clientes: [], sorteos: [], config: { minimo:35000, premio:'Smart TV 50 pulgadas' } };
+
+function iniciarApp(local) {
+  localActual = local;
+  DB = cargarDBLocal(local);
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('modalLocal').style.display = 'none';
+  document.getElementById('tb-local').textContent = '📍 ' + local;
+  document.getElementById('tb-mes').textContent = getMes();
+  cargarConfigUI();
+  actualizarUI();
+  renderLocalesConfig();
+}
+
+function mostrarModalLocal() {
+  const locales = getLocales();
+  const container = document.getElementById('localOpts');
+  container.innerHTML = locales.map((l,i) => `
+    <div class="local-opt${i===0?' selected':''}" onclick="seleccionarLocal(this,'${l}')">
+      <i class="ti ti-building-store"></i>
+      <div>
+        <div class="lo-name">${l}</div>
+        <div class="lo-sub">${(() => { try { const d=JSON.parse(localStorage.getItem(getDBKey(l))||'{}'); return (d.clientes||[]).length+' clientes registrados'; } catch(e){return '0 clientes registrados';} })()}</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('modalLocal').style.display = 'flex';
+}
+
+let localSeleccionado = null;
+function seleccionarLocal(el, nombre) {
+  document.querySelectorAll('.local-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  localSeleccionado = nombre;
+}
+function confirmarLocal() {
+  const sel = document.querySelector('.local-opt.selected');
+  const nombre = localSeleccionado || (sel ? sel.querySelector('.lo-name').textContent : getLocales()[0]);
+  if (!nombre) { notif('Seleccioná un local', 'err'); return; }
+  iniciarApp(nombre);
+}
+function agregarLocal() {
+  const v = document.getElementById('nuevoLocalInput').value.trim();
+  if (!v) return;
+  const locales = getLocales();
+  if (locales.includes(v)) { notif('Ya existe ese local','err'); return; }
+  locales.push(v);
+  setLocales(locales);
+  document.getElementById('nuevoLocalInput').value = '';
+  mostrarModalLocal();
+}
+function cambiarLocal() {
+  localSeleccionado = null;
+  mostrarModalLocal();
+}
+function agregarLocalConfig() {
+  const v = document.getElementById('nuevo-local-config').value.trim();
+  if (!v) return;
+  const locales = getLocales();
+  if (locales.includes(v)) { notif('Ya existe ese local','err'); return; }
+  locales.push(v);
+  setLocales(locales);
+  document.getElementById('nuevo-local-config').value = '';
+  renderLocalesConfig();
+  notif('Local agregado: '+v,'ok');
+}
+function renderLocalesConfig() {
+  const locales = getLocales();
+  document.getElementById('locales-list').innerHTML = locales.map(l => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <i class="ti ti-building-store" style="color:var(--brand);font-size:16px"></i>
+      <span style="flex:1;font-size:13px;font-weight:${l===localActual?'500':'400'}">${l}${l===localActual?' <span class="badge bg" style="margin-left:4px">Activo</span>':''}</span>
+      <span style="font-size:12px;color:var(--text3)">${(() => { try { const d=JSON.parse(localStorage.getItem(getDBKey(l))||'{}'); return (d.clientes||[]).length+' clientes'; } catch(e){return '0 clientes';} })()}</span>
+      ${l!==localActual?`<button class="btn btn-ghost btn-sm" style="padding:4px 8px" onclick="iniciarApp('${l}')"><i class="ti ti-door-enter"></i></button>`:''}
+    </div>
+  `).join('');
+}
+
+// ===================== IA / ESCANEO =====================
+async function escanearDNI(input) {
+  if (!input.files.length) return;
+  const file = input.files[0];
+  const loader = document.getElementById('scanLoader');
+  const status = document.getElementById('scanStatus');
+  const log = document.getElementById('aiLog');
+  loader.classList.add('show');
+  log.classList.remove('show');
+  const apikey = DB.config.apikey || '';
+  if (apikey && apikey.startsWith('sk-ant')) {
+    status.textContent = 'Enviando imagen a Claude Vision...';
+    try {
+      const base64 = await toBase64(file);
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514', max_tokens: 500,
+          messages: [{ role: 'user', content: [
+            { type: 'image', source: { type: 'base64', media_type: file.type||'image/jpeg', data: base64 } },
+            { type: 'text', text: 'Este es un DNI argentino. Extraé los datos en JSON plano (solo JSON, sin markdown ni explicaciones): {"nombre":"","apellido":"","dni":"","fecha_nac":"YYYY-MM-DD"}. Si no podés leer un campo dejalo vacío.' }
+          ]}]
+        })
+      });
+      const data = await resp.json();
+      const txt = (data.content?.[0]?.text || '{}').replace(/```json|```/g,'').trim();
+      const p = JSON.parse(txt);
+      loader.classList.remove('show');
+      if (p.nombre) document.getElementById('f-nom').value = p.nombre;
+      if (p.apellido) document.getElementById('f-ape').value = p.apellido;
+      if (p.dni) document.getElementById('f-dni').value = p.dni;
+      if (p.fecha_nac) document.getElementById('f-nac').value = p.fecha_nac;
+      log.innerHTML = '<strong>✓ IA procesó el DNI:</strong> '+[p.nombre,p.apellido,p.dni,p.fecha_nac].filter(Boolean).join(' · ');
+      log.classList.add('show');
+      notif('DNI escaneado · Completá contacto y monto','ok');
+    } catch(e) {
+      loader.classList.remove('show');
+      log.innerHTML = '<strong>Error:</strong> '+e.message+' — Cargando demo';
+      log.classList.add('show');
+      demoScan();
+    }
+  } else {
+    status.textContent = 'Modo demo (sin API Key)...';
+    await delay(1200);
+    loader.classList.remove('show');
+    log.innerHTML = '<strong>Modo demo:</strong> Ingresá tu API Key en Configuración para activar la IA real.';
+    log.classList.add('show');
+    demoScan();
+  }
+  input.value = '';
+}
+function demoScan() {
+  const noms = ['Martín','Lucía','Carlos','Valentina','Roberto','Camila','Diego','Sofía','Agustín','Florencia'];
+  const apes = ['García','Rodríguez','López','Martínez','González','Hernández','Díaz','Pérez','Sánchez','Romero'];
+  document.getElementById('f-nom').value = noms[Math.floor(Math.random()*noms.length)];
+  document.getElementById('f-ape').value = apes[Math.floor(Math.random()*apes.length)];
+  document.getElementById('f-dni').value = (20000000+Math.floor(Math.random()*30000000)).toLocaleString('es-AR');
+  const y=1970+Math.floor(Math.random()*40),m=String(Math.floor(Math.random()*12)+1).padStart(2,'0'),d=String(Math.floor(Math.random()*28)+1).padStart(2,'0');
+  document.getElementById('f-nac').value = `${y}-${m}-${d}`;
+}
+function toBase64(file) {
+  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=()=>rej(new Error('Error')); r.readAsDataURL(file); });
+}
+function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+// ===================== FORM / REGISTRO =====================
+function actualizarBarra() {
+  const v = parseFloat(document.getElementById('f-monto').value)||0;
+  const min = DB.config.minimo||35000;
+  const wrap = document.getElementById('monto-bar-wrap');
+  wrap.style.display = v>0 ? 'block':'none';
+  const pct = Math.min(100, Math.round(v/min*100));
+  document.getElementById('monto-fill').style.width = pct+'%';
+  document.getElementById('monto-label').textContent = '$'+v.toLocaleString('es-AR');
+  document.getElementById('monto-threshold').textContent = 'Mínimo: $'+min.toLocaleString('es-AR');
+  document.getElementById('monto-fill').style.background = v>=min ? '#1D9E75':'#EF9F27';
+}
+function registrar() {
+  const nom=document.getElementById('f-nom').value.trim();
+  const ape=document.getElementById('f-ape').value.trim();
+  const dni=document.getElementById('f-dni').value.trim();
+  const nac=document.getElementById('f-nac').value;
+  const tel=document.getElementById('f-tel').value.trim();
+  const mail=document.getElementById('f-mail').value.trim();
+  const monto=parseFloat(document.getElementById('f-monto').value)||0;
+  if (!nom||!ape||!dni||!tel||!mail) { notif('Completá todos los campos obligatorios (*)','err'); return; }
+  if (DB.clientes.find(c=>c.dni===dni)) { notif('Ya existe un cliente con ese DNI en este local','err'); return; }
+  const min=DB.config.minimo||35000;
+  const c={ id:Date.now(), nom, ape, dni, nac, tel, mail, monto, fecha:new Date().toLocaleDateString('es-AR'), mes:getMes(), ts:Date.now(), apto:monto>=min, local:localActual };
+  DB.clientes.push(c);
+  guardarDBLocal(localActual, DB);
+  limpiarForm();
+  actualizarUI();
+  notif(`${nom} ${ape} registrado${c.apto?' · Apto para el sorteo 🎉':''}!`,'ok');
+}
+function limpiarForm() {
+  ['f-nom','f-ape','f-dni','f-nac','f-tel','f-mail','f-monto'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('monto-bar-wrap').style.display='none';
+  document.getElementById('aiLog').classList.remove('show');
+}
+
+// ===================== UI GENERAL =====================
+function actualizarUI() {
+  const mes=getMes(); const min=DB.config.minimo||35000;
+  const aptos=DB.clientes.filter(c=>c.apto&&c.mes===mes);
+  const mesC=DB.clientes.filter(c=>c.mes===mes);
+  document.getElementById('tb-aptos').textContent=aptos.length+' aptos';
+  document.getElementById('nb-db').textContent=DB.clientes.length;
+  document.getElementById('s-total').textContent=DB.clientes.length;
+  document.getElementById('s-aptos').textContent=aptos.length;
+  document.getElementById('s-aptos-sub').textContent='+$'+min.toLocaleString('es-AR');
+  document.getElementById('s-mes').textContent=mesC.length;
+  const prom=DB.clientes.length>0?Math.round(DB.clientes.reduce((a,c)=>a+c.monto,0)/DB.clientes.length):0;
+  document.getElementById('s-prom').textContent='$'+prom.toLocaleString('es-AR');
+  document.getElementById('so-aptos').textContent=aptos.length;
+  document.getElementById('so-sorteos').textContent=DB.sorteos.length;
+  document.getElementById('so-min').textContent='$'+min.toLocaleString('es-AR');
+  const totalV=DB.clientes.reduce((a,c)=>a+c.monto,0);
+  document.getElementById('st-ventas').textContent='$'+totalV.toLocaleString('es-AR');
+  const conv=DB.clientes.length>0?Math.round(aptos.length/DB.clientes.length*100):0;
+  document.getElementById('st-conv').textContent=conv+'%';
+  document.getElementById('monto-threshold').textContent='Mínimo: $'+min.toLocaleString('es-AR');
+}
+
+function goTab(id) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
+  const idx=['reg','db','stats','email','sorteo','config'].indexOf(id);
+  document.querySelectorAll('.ntab')[idx].classList.add('on');
+  if(id==='db') renderTabla();
+  if(id==='stats') renderStats();
+  if(id==='email') initEmail();
+  if(id==='sorteo') renderSorteo();
+}
+
+function notif(msg,tipo='ok') {
+  const el=document.getElementById('notif');
+  document.getElementById('notif-msg').textContent=msg;
+  el.className='notif show '+(tipo==='ok'?'ok':'err');
+  el.querySelector('i').className=tipo==='ok'?'ti ti-circle-check':'ti ti-alert-circle';
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// ===================== TABLA =====================
+function filtrar() { renderTabla(document.getElementById('srch').value,document.getElementById('fil-mes').value,document.getElementById('fil-apt').value); }
+function renderTabla(srch='',filMes='',filApt='') {
+  let lista=DB.clientes.slice().reverse();
+  if(srch) lista=lista.filter(c=>(c.nom+' '+c.ape).toLowerCase().includes(srch.toLowerCase())||c.dni.includes(srch)||c.mail.toLowerCase().includes(srch.toLowerCase()));
+  if(filMes) lista=lista.filter(c=>c.mes===filMes);
+  if(filApt==='1') lista=lista.filter(c=>c.apto);
+  if(filApt==='0') lista=lista.filter(c=>!c.apto);
+  const tbody=document.getElementById('tbl-body');
+  if(!lista.length){ tbody.innerHTML='<tr><td colspan="7"><div class="empty"><i class="ti ti-users"></i><p>Sin resultados</p></div></td></tr>'; return; }
+  tbody.innerHTML=lista.map(c=>`
+    <tr>
+      <td><div class="td-nm"><div class="av">${c.nom[0]}${c.ape[0]}</div><div><div style="font-weight:500;font-size:13px">${c.nom} ${c.ape}</div><div style="font-size:11px;color:var(--text3)">${c.fecha}</div></div></div></td>
+      <td style="font-family:monospace;font-size:12px">${c.dni}</td>
+      <td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis">${c.mail}</td>
+      <td style="font-size:12px">${c.tel}</td>
+      <td style="font-weight:500">$${c.monto.toLocaleString('es-AR')}</td>
+      <td>${c.apto?'<span class="badge bg"><i class="ti ti-check" style="font-size:11px"></i> Apto</span>':'<span class="badge bgr">No apto</span>'}</td>
+      <td><button class="btn btn-ghost btn-sm" style="padding:4px 8px;color:var(--red);border-color:var(--red)" onclick="eliminarCliente(${c.id})"><i class="ti ti-trash" style="font-size:14px"></i></button></td>
+    </tr>
+  `).join('');
+  const sel=document.getElementById('fil-mes');
+  const meses=[...new Set(DB.clientes.map(c=>c.mes))]; const cur=sel.value;
+  sel.innerHTML='<option value="">Todos los meses</option>'+meses.map(m=>`<option value="${m}"${m===cur?' selected':''}>${m}</option>`).join('');
+}
+function eliminarCliente(id) {
+  if(!confirm('¿Eliminar este cliente?')) return;
+  DB.clientes=DB.clientes.filter(c=>c.id!==id);
+  guardarDBLocal(localActual,DB); actualizarUI(); renderTabla();
+  notif('Cliente eliminado','ok');
+}
+
+// ===================== ESTADÍSTICAS =====================
+let chartMeses=null, chartDonut=null;
+function renderStats() {
+  actualizarUI();
+  const meses=[...new Set(DB.clientes.map(c=>c.mes))].slice(-6);
+  const regs=meses.map(m=>DB.clientes.filter(c=>c.mes===m).length);
+  const aptos=meses.map(m=>DB.clientes.filter(c=>c.mes===m&&c.apto).length);
+  if(chartMeses){chartMeses.destroy();chartMeses=null;}
+  chartMeses=new Chart(document.getElementById('ch-meses').getContext('2d'),{
+    type:'bar', data:{labels:meses.map(m=>m.split(' ')[0]),datasets:[
+      {label:'Registros',data:regs,backgroundColor:'#5DCAA5',borderRadius:4},
+      {label:'Aptos',data:aptos,backgroundColor:'#085041',borderRadius:4}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}},barPercentage:.7}
+  });
+  const totalA=DB.clientes.filter(c=>c.apto).length, totalN=DB.clientes.length-totalA;
+  if(chartDonut){chartDonut.destroy();chartDonut=null;}
+  chartDonut=new Chart(document.getElementById('ch-donut').getContext('2d'),{
+    type:'doughnut', data:{labels:['Aptos','No aptos'],datasets:[{data:[totalA,totalN],backgroundColor:['#1D9E75','#B4B2A9'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'68%'}
+  });
+  document.getElementById('leg-donut').innerHTML=
+    `<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75"></span>Aptos ${totalA}</span>
+     <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#B4B2A9"></span>No aptos ${totalN}</span>`;
+  const mes=getMes();
+  const top=DB.clientes.filter(c=>c.mes===mes).sort((a,b)=>b.monto-a.monto).slice(0,5);
+  const maxM=top.length>0?top[0].monto:1;
+  document.getElementById('top-compras').innerHTML=top.length?top.map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:11px;color:var(--text3);width:14px;text-align:right">${i+1}</span>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+          <span style="font-weight:500">${c.nom} ${c.ape}</span>
+          <span style="color:var(--brand)">$${c.monto.toLocaleString('es-AR')}</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${Math.round(c.monto/maxM*100)}%"></div></div>
+      </div>
+    </div>
+  `).join(''):'<div class="empty" style="padding:.5rem"><p>Sin compras este mes</p></div>';
+}
+
+// ===================== EMAIL =====================
+const TPLS = {
+  promo:{subject:'🎉 ¡Participá del sorteo de este mes y ganá un Smart TV!',body:`Hola {nombre},\n\nTe escribimos desde {negocio} para contarte que este mes tenés la oportunidad de ganar un {premio}.\n\n¿Cómo participar? Realizá una compra mayor a ${(()=>(DB&&DB.config?'$'+DB.config.minimo.toLocaleString('es-AR'):'$35.000'))()}) en nuestro negocio y entrás automáticamente al sorteo del mes.\n\nEl sorteo se realiza mensualmente y notificamos al ganador por email.\n\n¡Mucha suerte y gracias por elegirnos!\n\nSaludos,\n{firma}`},
+  recordatorio:{subject:'⏰ Últimos días para participar del sorteo',body:`Hola {nombre},\n\nTe recordamos que quedan pocos días para el sorteo mensual de {negocio}.\n\nSi ya realizaste una compra mayor a $35.000 ya estás participando. Si no, ¡es tu última oportunidad de este mes!\n\nEl premio: {premio}.\n\n¡Te esperamos!\n\n{firma}`},
+  ganador:{subject:'🏆 ¡Felicitaciones! Ganaste el sorteo de {negocio}',body:`¡Felicitaciones {nombre}!\n\nNos alegra comunicarte que fuiste el/la ganador/a del sorteo mensual de {negocio}.\n\nTu premio: {premio}\n\nComunicate con nosotros para coordinar la entrega:\n📞 {tel}\n\n¡Muchas felicidades!\n\nEquipo {negocio}`},
+  custom:{subject:'',body:''}
+};
+let emailTabActual='promo';
+function initEmail(){ setEmailTab('promo',document.querySelector('.mtab')); actualizarPrevEmail(); }
+function setEmailTab(tipo,el){
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('on'));
+  if(el) el.classList.add('on');
+  emailTabActual=tipo;
+  const tpl=TPLS[tipo];
+  document.getElementById('e-subject').value=tpl.subject;
+  document.getElementById('e-body').value=tpl.body;
+  actualizarPrevEmail();
+}
+function actualizarPrevEmail(){
+  const mes=getMes(); const dest=document.getElementById('e-dest').value;
+  let lista=DB.clientes;
+  if(dest==='aptos') lista=DB.clientes.filter(c=>c.apto&&c.mes===mes);
+  if(dest==='noaptos') lista=DB.clientes.filter(c=>!c.apto&&c.mes===mes);
+  document.getElementById('e-count-label').textContent=lista.length+' destinatarios';
+  const cfg=DB.config; const primer=lista[0]||{nom:'[Nombre]'};
+  const body=(document.getElementById('e-body').value||'')
+    .replace(/{nombre}/g,primer.nom).replace(/{negocio}/g,cfg.negocio||'nuestro negocio')
+    .replace(/{premio}/g,cfg.premio||'Smart TV 50 pulgadas').replace(/{tel}/g,cfg.tel||'')
+    .replace(/{firma}/g,document.getElementById('e-firma').value||cfg.duenio||'El equipo');
+  document.getElementById('e-prev-body').textContent=body;
+}
+async function generarEmailIA(){
+  const apikey=DB.config.apikey||'';
+  if(!apikey||!apikey.startsWith('sk-ant')){ notif('Ingresá tu API Key en Configuración','err'); return; }
+  notif('Generando email con IA...','ok');
+  const neg=DB.config.negocio||'nuestro negocio'; const premio=DB.config.premio||'Smart TV 50 pulgadas';
+  const tipoMap={promo:'promocional para el sorteo mensual',recordatorio:'recordatorio de últimos días',ganador:'felicitación al ganador',custom:'personalizado y creativo'};
+  try {
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        messages:[{role:'user',content:`Escribí un email ${tipoMap[emailTabActual]} en español rioplatense para un negocio llamado "${neg}" que sortea mensualmente un "${premio}" entre clientes con compras mayores a $35.000. Tono cercano e informal pero profesional. Devolvé SOLO un JSON válido: {"subject":"...","body":"..."}. Usá {nombre} para destinatario, {negocio} para negocio, {premio} para premio, {firma} para firma. Sin markdown, sin explicaciones.`}]
+      })
+    });
+    const data=await resp.json();
+    const txt=(data.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim();
+    const p=JSON.parse(txt);
+    if(p.subject) document.getElementById('e-subject').value=p.subject;
+    if(p.body) document.getElementById('e-body').value=p.body;
+    actualizarPrevEmail(); notif('Email generado con IA','ok');
+  } catch(e){ notif('Error: '+e.message,'err'); }
+}
+async function enviarEmails(){
+  const mes=getMes(); const dest=document.getElementById('e-dest').value;
+  let lista=DB.clientes;
+  if(dest==='aptos') lista=DB.clientes.filter(c=>c.apto&&c.mes===mes);
+  if(dest==='noaptos') lista=DB.clientes.filter(c=>!c.apto&&c.mes===mes);
+  if(!lista.length){ notif('No hay destinatarios','err'); return; }
+  const subject=document.getElementById('e-subject').value;
+  const body=document.getElementById('e-body').value;
+  if(!subject||!body){ notif('Completá asunto y cuerpo','err'); return; }
+  const cfg=DB.config; const firma=document.getElementById('e-firma').value||cfg.duenio||'El equipo';
+  const progWrap=document.getElementById('email-progress');
+  const progLabel=document.getElementById('email-prog-label');
+  const progFill=document.getElementById('email-prog-fill');
+  progWrap.style.display='block'; progFill.style.width='0%';
+  let log=[];
+  for(let i=0;i<lista.length;i++){
+    const c=lista[i];
+    progLabel.textContent=`Enviando a ${c.nom} ${c.ape} (${i+1}/${lista.length})...`;
+    progFill.style.width=Math.round((i+1)/lista.length*100)+'%';
+    log.push(`<span style="color:var(--brand)">✓</span> ${c.mail} · ${c.nom} ${c.ape}`);
+    await delay(100);
+  }
+  progLabel.textContent=`¡${lista.length} emails enviados!`;
+  const logEl=document.getElementById('email-log');
+  document.getElementById('email-log-body').innerHTML=log.join('<br>');
+  logEl.style.display='block';
+  notif(`${lista.length} emails enviados correctamente`,'ok');
+  setTimeout(()=>progWrap.style.display='none',4000);
+}
+
+// ===================== SORTEO =====================
+let ultimoGanador=null;
+function renderSorteo(){
+  actualizarUI();
+  const mes=getMes(); const aptos=DB.clientes.filter(c=>c.apto&&c.mes===mes);
+  document.getElementById('so-info').textContent=aptos.length>0
+    ?`${aptos.length} cliente${aptos.length>1?'s':''} apto${aptos.length>1?'s':''} para el sorteo de ${mes}`
+    :'Sin clientes aptos aún — registrá compras mayores a $'+(DB.config.minimo||35000).toLocaleString('es-AR');
+  renderHistorial();
+}
+function hacerSorteo(){
+  const mes=getMes(); const aptos=DB.clientes.filter(c=>c.apto&&c.mes===mes);
+  if(!aptos.length){ notif('No hay clientes aptos para sortear','err'); return; }
+  const drum=document.getElementById('drumBtn');
+  drum.classList.add('spin');
+  document.getElementById('winCard').classList.remove('show');
+  setTimeout(()=>{
+    drum.classList.remove('spin');
+    const g=aptos[Math.floor(Math.random()*aptos.length)];
+    ultimoGanador=g;
+    document.getElementById('win-name').textContent=`${g.nom} ${g.ape}`;
+    document.getElementById('win-data').textContent=`DNI ${g.dni} · ${g.mail} · ${g.tel} · Compra $${g.monto.toLocaleString('es-AR')}`;
+    document.getElementById('winCard').classList.add('show');
+    DB.sorteos.push({mes,ganador:{nom:g.nom,ape:g.ape,dni:g.dni,mail:g.mail,tel:g.tel,monto:g.monto},ts:Date.now(),fecha:new Date().toLocaleDateString('es-AR')});
+    guardarDBLocal(localActual,DB); actualizarUI(); renderHistorial();
+    notif(`🏆 Ganador: ${g.nom} ${g.ape}`,'ok');
+  },2000);
+}
+function notificarGanador(){ if(!ultimoGanador) return; goTab('email'); document.querySelectorAll('.mtab')[2].click(); notif('Template de ganador listo','ok'); }
+function copiarGanador(){
+  if(!ultimoGanador) return;
+  const g=ultimoGanador;
+  const txt=`Ganador: ${g.nom} ${g.ape} | DNI: ${g.dni} | Email: ${g.mail} | Tel: ${g.tel} | Compra: $${g.monto.toLocaleString('es-AR')}`;
+  navigator.clipboard?.writeText(txt).then(()=>notif('Datos copiados','ok')).catch(()=>notif('No se pudo copiar','err'));
+}
+function renderHistorial(){
+  const el=document.getElementById('hist-body');
+  if(!DB.sorteos.length){ el.innerHTML='<div class="empty" style="padding:1rem"><p>Sin historial</p></div>'; return; }
+  el.innerHTML=DB.sorteos.slice().reverse().map(s=>`
+    <div class="hist-item">
+      <span class="badge bo">🏆 ${s.mes}</span>
+      <span style="font-weight:500;font-size:13px">${s.ganador.nom} ${s.ganador.ape}</span>
+      <span style="font-size:12px;color:var(--text3);margin-left:auto">${s.ganador.mail}</span>
+      <span style="font-size:11px;color:var(--text3)">${s.fecha||''}</span>
+    </div>
+  `).join('');
+}
+
+// ===================== CONFIG =====================
+function cargarConfigUI(){
+  const c=DB.config||{};
+  ['negocio','duenio','tel','email','dir','premio'].forEach(k=>{ if(c[k]) document.getElementById('c-'+k).value=c[k]; });
+  if(c.minimo) document.getElementById('c-minimo').value=c.minimo;
+  if(c.apikey) document.getElementById('c-apikey').value=c.apikey;
+}
+function guardarConfig(){
+  DB.config={
+    negocio:document.getElementById('c-negocio').value,
+    duenio:document.getElementById('c-duenio').value,
+    tel:document.getElementById('c-tel').value,
+    email:document.getElementById('c-email').value,
+    dir:document.getElementById('c-dir').value,
+    minimo:parseFloat(document.getElementById('c-minimo').value)||35000,
+    premio:document.getElementById('c-premio').value||'Smart TV 50 pulgadas',
+    dia:document.getElementById('c-dia').value,
+    apikey:document.getElementById('c-apikey').value
+  };
+  guardarDBLocal(localActual,DB); actualizarUI();
+  notif('Configuración guardada','ok');
+}
+function testIA(){
+  const k=document.getElementById('c-apikey').value;
+  if(!k||!k.startsWith('sk-ant')){ notif('Ingresá una API Key válida (empieza con sk-ant)','err'); return; }
+  DB.config.apikey=k; guardarDBLocal(localActual,DB);
+  notif('API Key guardada · Escaneá un DNI para probar','ok');
+}
+function cambiarColor(v){
+  const map={verde:['#1D9E75','#085041','#E1F5EE'],azul:['#378ADD','#0C447C','#E6F1FB'],rojo:['#E24B4A','#791F1F','#FCEBEB'],violeta:['#7F77DD','#3C3489','#EEEDFE']};
+  const [b,bd,bl]=map[v]||map.verde;
+  document.documentElement.style.setProperty('--brand',b);
+  document.documentElement.style.setProperty('--brand-dark',bd);
+  document.documentElement.style.setProperty('--brand-light',bl);
+}
+function limpiarDB(){
+  if(!confirm('¿Eliminar TODOS los clientes y sorteos de "'+localActual+'"? No se puede deshacer.')) return;
+  DB.clientes=[]; DB.sorteos=[]; guardarDBLocal(localActual,DB); actualizarUI(); renderTabla();
+  notif('Base de datos limpiada','ok');
+}
+
+// ===================== EXPORTAR =====================
+function exportCSV(){
+  if(!DB.clientes.length){ notif('No hay datos','err'); return; }
+  const h=['Nombre','Apellido','DNI','Fecha Nac','Teléfono','Email','Monto','Fecha','Mes','Apto'];
+  const rows=DB.clientes.map(c=>[c.nom,c.ape,c.dni,c.nac||'',c.tel,c.mail,c.monto,c.fecha,c.mes,c.apto?'Sí':'No']);
+  const csv=[h,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  descargar(csv,'text/csv',`clientes_${localActual}_${getMes().replace(' ','_')}.csv`);
+  notif('CSV exportado','ok');
+}
+function exportXLSX(){
+  if(!DB.clientes.length){ notif('No hay datos','err'); return; }
+  const h=['Nombre','Apellido','DNI','Fecha Nac','Teléfono','Email','Monto','Fecha','Mes','Apto'];
+  const rows=DB.clientes.map(c=>[c.nom,c.ape,c.dni,c.nac||'',c.tel,c.mail,c.monto,c.fecha,c.mes,c.apto?'Sí':'No']);
+  let xml='<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Clientes"><Table>';
+  const makeRow=cols=>'<Row>'+cols.map(v=>`<Cell><Data ss:Type="${typeof v==='number'?'Number':'String'}">${String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</Data></Cell>`).join('')+'</Row>';
+  xml+=makeRow(h)+rows.map(makeRow).join('')+'</Table></Worksheet></Workbook>';
+  descargar(xml,'application/vnd.ms-excel',`clientes_${localActual}_${getMes().replace(' ','_')}.xls`);
+  notif('Excel exportado','ok');
+}
+function descargar(contenido,tipo,nombre){
+  const blob=new Blob([contenido],{type:tipo});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=nombre; a.click();
+}
+
+// ===================== INIT =====================
+const localesGuardados = getLocales();
+if(localesGuardados.length===1 && !localStorage.getItem(getDBKey(localesGuardados[0]))) {
+  iniciarApp(localesGuardados[0]);
+} else {
+  mostrarModalLocal();
+}
+</script>
+</body>
+</html>
